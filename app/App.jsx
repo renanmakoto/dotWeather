@@ -1,6 +1,6 @@
-import React from 'react'
-import { View, StatusBar } from 'react-native'
-import { WeatherScreen } from './screens/WeatherScreen'
+import React from 'react';
+import { View, StatusBar } from 'react-native';
+import { WeatherScreen } from './screens/WeatherScreen';
 
 export default function App() {
   return (
@@ -8,5 +8,5 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <WeatherScreen />
     </View>
-  )
+  );
 }
