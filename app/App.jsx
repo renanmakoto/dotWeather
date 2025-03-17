@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StatusBar } from 'react-native'
-import { WeatherScreen } from './screens/WeatherScreen';
+import { WeatherScreen } from './screens/WeatherScreen'
 
 export default function App() {
   return (
