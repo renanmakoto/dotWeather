@@ -19,13 +19,16 @@ export default function WeatherCard({ weatherData }) {
     hourly,
   } = weatherData
 
+  // Get the weather icon based on weather code
+  const weatherIcon = weatherCodeToIcon(current.weatherCode)
+
   return (
     <View style={styles.container}>
       <Text style={styles.location}>
         {city}, {country}
       </Text>
       <Ionicons
-        name={weatherCodeToIcon(current.weatherCode)}
+        name={weatherIcon}
         size={100}
         color="#fff"
         style={styles.icon}

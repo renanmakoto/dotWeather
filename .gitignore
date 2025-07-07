@@ -1,0 +1,53 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+
+# Expo
+.expo/
+.expo-shared/
+web-build/
+dist/
+*.expo.js
+
+# Android
+android/
+*.apk
+*.aab
+*.keystore
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+.Trashes
+._*
+.Spotlight-V100
+.fseventsd
+.VolumeIcon.icns
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.*.local
+
+# Metro bundler cache
+metro-cache/
+.cache/
+
+# Optional: Ignore system test/preview files
+*.iml
+*.swp
+.idea/
+*.orig

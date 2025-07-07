@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import axios from 'axios'
-import { WEATHER_API_BASE_URL } from '../constants/api'
 
 export default function useWeather() {
   const [weatherData, setWeatherData] = useState(null)
@@ -10,7 +9,9 @@ export default function useWeather() {
   const fetchWeather = async city => {
     setLoading(true)
     setError(null)
+
     try {
+      // 1. Get coordinates by city name
       const geoResponse = await axios.get('https://geocoding-api.open-meteo.com/v1/search', {
         params: {
           name: city,
@@ -28,19 +29,22 @@ export default function useWeather() {
 
       const { latitude, longitude, name, country } = geoResponse.data.results[0]
 
-      const weatherResponse = await axios.get(`${WEATHER_API_BASE_URL}`, {
+      // 2. Fetch weather data using lat/lon
+      const weatherResponse = await axios.get('https://api.open-meteo.com/v1/forecast', {
         params: {
           latitude,
           longitude,
-          hourly: 'temperature_2m,relativehumidity_2m,windspeed_10m',
           current_weather: true,
+          hourly: 'temperature_2m,relative_humidity_2m,wind_speed_10m',
           timezone: 'auto',
         },
       })
 
       const parsedData = parseWeatherData(weatherResponse.data, name, country)
       setWeatherData(parsedData)
+
     } catch (err) {
+      console.error(err)
       setError('An error occurred while fetching weather data. Please try again later.')
     } finally {
       setLoading(false)
@@ -58,14 +62,14 @@ export default function useWeather() {
       current: {
         time: current_weather.time,
         temperature: current_weather.temperature,
-        windSpeed: current_weather.windspeed,
+        windSpeed: current_weather.wind_speed,
         weatherCode: current_weather.weathercode,
       },
       hourly: {
         time: hourly.time.slice(0, 5),
         temperature: hourly.temperature_2m.slice(0, 5),
-        humidity: hourly.relativehumidity_2m.slice(0, 5),
-        windSpeed: hourly.windspeed_10m.slice(0, 5),
+        humidity: hourly.relative_humidity_2m.slice(0, 5),
+        windSpeed: hourly.wind_speed_10m.slice(0, 5),
       },
     }
   }
