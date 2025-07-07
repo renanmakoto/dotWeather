@@ -1,5 +1,3 @@
-// app/constants/api.js
-
 export async function fetchWeather(lat, lon) {
   const url = `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${lat}&longitude=${lon}` +

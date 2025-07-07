@@ -14,26 +14,22 @@ import useWeather from '../hooks/useWeather'
 
 const getBackgroundColors = (condition, temperature) => {
   if (temperature >= 25) {
-    // Hot weather, orange to yellow gradient
     return ['#FF7300', '#FEF253']
   }
   if (temperature < 15) {
-    // Cold weather, blue gradient
     return ['#00C6FB', '#005BEA']
   }
-  // Moderate weather, light blue gradient
   return ['#4facfe', '#00f2fe']
 }
 
 export default function WeatherScreen() {
   const { weatherData, fetchWeather, loading, error } = useWeather()
   const [showWeather, setShowWeather] = useState(false)
-  const [backgroundColors, setBackgroundColors] = useState(['#4facfe', '#00f2fe']) // Default background
+  const [backgroundColors, setBackgroundColors] = useState(['#4facfe', '#00f2fe'])
 
   const handleSearch = city => {
     fetchWeather(city)
     setShowWeather(true)
-    // Force the background color update immediately based on the fetched temperature
     const temperature = weatherData?.current?.temperature || 20
     const newBackground = getBackgroundColors(null, temperature)
     setBackgroundColors(newBackground)
@@ -41,18 +37,16 @@ export default function WeatherScreen() {
 
   const handleBack = () => {
     setShowWeather(false)
-    // Reset to the initial background when going back to home
     setBackgroundColors(['#4facfe', '#00f2fe'])
   }
 
   useEffect(() => {
     if (weatherData) {
-      // Update the background color based on the current weather after data is fetched
       const temperature = weatherData?.current?.temperature || 20
       const newBackground = getBackgroundColors(null, temperature)
       setBackgroundColors(newBackground)
     }
-  }, [weatherData]) // Trigger when weatherData changes
+  }, [weatherData])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

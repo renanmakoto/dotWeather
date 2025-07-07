@@ -19,7 +19,6 @@ export default function WeatherCard({ weatherData }) {
     hourly,
   } = weatherData
 
-  // Get the weather icon based on weather code
   const weatherIcon = weatherCodeToIcon(current.weatherCode)
 
   return (

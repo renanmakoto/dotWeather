@@ -11,7 +11,6 @@ export default function useWeather() {
     setError(null)
 
     try {
-      // 1. Get coordinates by city name
       const geoResponse = await axios.get('https://geocoding-api.open-meteo.com/v1/search', {
         params: {
           name: city,
@@ -29,7 +28,6 @@ export default function useWeather() {
 
       const { latitude, longitude, name, country } = geoResponse.data.results[0]
 
-      // 2. Fetch weather data using lat/lon
       const weatherResponse = await axios.get('https://api.open-meteo.com/v1/forecast', {
         params: {
           latitude,
