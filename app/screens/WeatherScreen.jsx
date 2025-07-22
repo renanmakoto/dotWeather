@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import SearchBar from '../components/SearchBar'
 import WeatherCard from '../components/WeatherCard'
 import useWeather from '../hooks/useWeather'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const getBackgroundColors = (condition, temperature) => {
   if (temperature >= 25) {
@@ -50,26 +51,28 @@ export default function WeatherScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <LinearGradient colors={backgroundColors} style={styles.container}>
-        <SearchBar onSearch={handleSearch} />
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading...</Text>
+      <SafeAreaView style={{ flex: 1 }}>
+        <LinearGradient colors={backgroundColors} style={styles.container}>
+          <SearchBar onSearch={handleSearch} />
+          {loading && (
+            <View style={styles.loadingContainer}>
+              <Text style={styles.loadingText}>Loading...</Text>
+            </View>
+          )}
+          {error && <Text style={styles.errorText}>{error}</Text>}
+          {showWeather && weatherData && !loading && !error && (
+            <>
+              <WeatherCard weatherData={weatherData} />
+              <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                <Text style={styles.backButtonText}>Back to Home</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>2025 - by dotExtension</Text>
           </View>
-        )}
-        {error && <Text style={styles.errorText}>{error}</Text>}
-        {showWeather && weatherData && !loading && !error && (
-          <>
-            <WeatherCard weatherData={weatherData} />
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-              <Text style={styles.backButtonText}>Back to Home</Text>
-            </TouchableOpacity>
-          </>
-        )}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>2025 - by dotExtension</Text>
-        </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   )
 }
@@ -79,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 80,
+    paddingTop: 20, // reduced padding
     justifyContent: 'flex-start',
   },
   loadingContainer: {
