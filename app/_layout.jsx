@@ -1,6 +1,6 @@
 import React from 'react'
 import { Stack } from 'expo-router'
-import { StatusBar, View } from 'react-native'
+import { StatusBar, View, Platform } from 'react-native'
 
 export default function Layout() {
   return (
@@ -13,6 +13,7 @@ export default function Layout() {
           headerTintColor: '#00ADA2',
           headerStyle: {
             backgroundColor: 'white',
+            height: 100,
           },
           headerTitleStyle: {
             color: '#00ADA2',
@@ -20,7 +21,13 @@ export default function Layout() {
           },
           headerTransparent: true,
           headerBackground: () => (
-            <View style={{ backgroundColor: 'white', height: 80, paddingTop: StatusBar.currentHeight }} />
+            <View
+              style={{
+                backgroundColor: 'white',
+                height: 100,
+                paddingTop: Platform.OS === 'android' ? 40 : 20,
+              }}
+            />
           ),
           headerStatusBarHeight: 0,
         }}

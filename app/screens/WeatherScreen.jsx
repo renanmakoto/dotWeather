@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20, // reduced padding
+    paddingTop: 20,
     justifyContent: 'flex-start',
   },
   loadingContainer: {
