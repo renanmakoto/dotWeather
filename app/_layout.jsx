@@ -1,35 +1,37 @@
 import React from 'react'
 import { Stack } from 'expo-router'
-import { StatusBar, View, Platform } from 'react-native'
+import { StatusBar, View, Text } from 'react-native'
 
 export default function Layout() {
   return (
     <>
-      <StatusBar barStyle="light-content" translucent backgroundColor="black" />
+      {/* Set status bar icons to dark so they are visible on white background */}
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <Stack
         screenOptions={{
-          headerTitle: 'dotWeather',
-          headerTitleAlign: 'center',
-          headerTintColor: '#00ADA2',
-          headerStyle: {
-            backgroundColor: 'white',
-            height: 100,
-          },
-          headerTitleStyle: {
-            color: '#00ADA2',
-            fontWeight: 'bold',
-          },
           headerTransparent: true,
-          headerBackground: () => (
+          headerTitle: '',
+          header: () => (
             <View
               style={{
                 backgroundColor: 'white',
-                height: 100,
-                paddingTop: Platform.OS === 'android' ? 40 : 20,
+                height: 140,
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                paddingBottom: 20,
               }}
-            />
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: '#00ADA2',
+                }}
+              >
+                dotWeather
+              </Text>
+            </View>
           ),
-          headerStatusBarHeight: 0,
         }}
       />
     </>

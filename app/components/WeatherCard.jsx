@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, FlatList } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 
 const weatherCodeToIcon = code => {
@@ -37,38 +37,28 @@ export default function WeatherCard({ weatherData }) {
         Wind Speed: {current.windSpeed} m/s
       </Text>
       <Text style={styles.sectionTitle}>Next 5 Hours</Text>
-      <FlatList
-        data={hourly.time}
-        keyExtractor={item => item}
+
+      <ScrollView
         horizontal
-        renderItem={({ item, index }) => (
-          <View style={styles.hourlyItem}>
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+      >
+        {hourly.time.slice(0, 5).map((time, index) => (
+          <View style={styles.hourlyItem} key={index}>
             <Text style={styles.hourlyTime}>
-              {new Date(item).getHours()}:00
+              {new Date(time).getHours()}:00
             </Text>
-            <Ionicons
-              name="thermometer"
-              size={24}
-              color="#fff"
-              style={styles.hourlyIcon}
-            />
+            <Ionicons name="thermometer" size={20} color="#fff" />
             <Text style={styles.hourlyTemp}>
               {hourly.temperature[index]}°C
             </Text>
-            <Ionicons
-              name="water"
-              size={24}
-              color="#fff"
-              style={styles.hourlyIcon}
-            />
+            <Ionicons name="water" size={20} color="#fff" />
             <Text style={styles.hourlyHumidity}>
               {hourly.humidity[index]}%
             </Text>
           </View>
-        )}
-        showsHorizontalScrollIndicator={false}
-        style={styles.hourlyList}
-      />
+        ))}
+      </ScrollView>
     </View>
   )
 }
@@ -107,30 +97,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
-  hourlyList: {
-    width: '100%',
+  scrollContainer: {
+    paddingHorizontal: 10,
   },
   hourlyItem: {
     alignItems: 'center',
-    marginRight: 15,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: 15,
-    padding: 10,
+    padding: 8,
+    width: 64,
+    marginRight: 10,
   },
   hourlyTime: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
     marginBottom: 5,
   },
-  hourlyIcon: {
-    marginVertical: 2,
-  },
   hourlyTemp: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
   },
   hourlyHumidity: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
   },
 })

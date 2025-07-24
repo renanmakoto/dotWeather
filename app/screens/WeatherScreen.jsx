@@ -52,26 +52,28 @@ export default function WeatherScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1 }}>
-        <LinearGradient colors={backgroundColors} style={styles.container}>
-          <SearchBar onSearch={handleSearch} />
-          {loading && (
-            <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Loading...</Text>
+        <View style={{ flex: 1, marginTop: 80 }}>
+          <LinearGradient colors={backgroundColors} style={styles.container}>
+            <SearchBar onSearch={handleSearch} />
+            {loading && (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Loading...</Text>
+              </View>
+            )}
+            {error && <Text style={styles.errorText}>{error}</Text>}
+            {showWeather && weatherData && !loading && !error && (
+              <>
+                <WeatherCard weatherData={weatherData} />
+                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                  <Text style={styles.backButtonText}>Back to Home</Text>
+                </TouchableOpacity>
+              </>
+            )}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>2025 - by dotExtension</Text>
             </View>
-          )}
-          {error && <Text style={styles.errorText}>{error}</Text>}
-          {showWeather && weatherData && !loading && !error && (
-            <>
-              <WeatherCard weatherData={weatherData} />
-              <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                <Text style={styles.backButtonText}>Back to Home</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>2025 - by dotExtension</Text>
-          </View>
-        </LinearGradient>
+          </LinearGradient>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   )
@@ -81,9 +83,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
     justifyContent: 'flex-start',
+    paddingHorizontal: 20,
   },
   loadingContainer: {
     marginTop: 50,
@@ -103,14 +104,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     position: 'absolute',
-    bottom: 50,
+    bottom: 15,
   },
   footerText: {
     fontSize: 16,
     color: '#ffffff',
   },
   backButton: {
-    marginTop: 20,
+    marginTop: 10,
     backgroundColor: 'rgba(255,255,255,0.3)',
     paddingHorizontal: 20,
     paddingVertical: 10,
