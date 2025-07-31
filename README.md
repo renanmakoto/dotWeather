@@ -17,7 +17,7 @@ TECHNOLOGIES USED:
 <h4 align="center"> 
 	Google Play Store link to install dotHealth:
 </h4>
-<p align="center">https://play.google.com/store/apps/details?id=com.dotextension.dothealth</p>
+<p align="center">https://play.google.com/store/apps/details?id=com.dotextension.dotweather</p>
 
 ### Features
 
