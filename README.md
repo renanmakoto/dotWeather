@@ -1,11 +1,6 @@
 <h1 align="center">dotWeather</h1>
 
-<p align="center">dotHealth is a simple and intuitive app that helps you calculate your Body Mass Index (BMI) and Basal Metabolic Rate (BMR) effortlessly. Whether you're on a journey to better health or just curious about your metrics, dotHealth is here to assist you. No account is required—just input your data, and get your results instantly. Key features include:
-BMI Calculation: Determine your BMI based on your height and weight.
-BMR Calculation: Calculate your daily calorie needs with our easy-to-use BMR calculator.
-Simple and Clean Interface: User-friendly design with no distractions.
-No Personal Data Collection: Your data stays on your device, ensuring complete privacy.
-Completely Free: No in-app purchases or ads. Just a straightforward tool to help you stay on top of your health.</p>
+<p align="center">dotWeather is a clean and lightweight React Native weather app built with Expo. It lets users search for any city and view current weather conditions along with hourly forecasts in a simple, scrollable UI. The app does not use a database, so there's no need to create an account, just open and check the weather instantly.</p>
 
 <div align="center">
 
