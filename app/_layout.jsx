@@ -5,7 +5,6 @@ import { StatusBar, View, Text } from 'react-native'
 export default function Layout() {
   return (
     <>
-      {/* Set status bar icons to dark so they are visible on white background */}
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <Stack
         screenOptions={{
