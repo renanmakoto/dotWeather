@@ -14,7 +14,7 @@ export default function Layout() {
             <View
               style={{
                 backgroundColor: 'white',
-                height: 140,
+                height: 120,
                 justifyContent: 'flex-end',
                 alignItems: 'center',
                 paddingBottom: 20,

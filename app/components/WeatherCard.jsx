@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 
 const weatherCodeToIcon = code => {
@@ -20,45 +20,35 @@ export default function WeatherCard({ weatherData }) {
   } = weatherData
 
   const weatherIcon = weatherCodeToIcon(current.weatherCode)
+  const items = hourly.time.slice(0,5).map((t, i) => ({
+    time: new Date(t).getHours(),
+    temp: hourly.temperature[i],
+    hum: hourly.humidity[i],
+  }))
 
   return (
     <View style={styles.container}>
-      <Text style={styles.location}>
-        {city}, {country}
-      </Text>
-      <Ionicons
-        name={weatherIcon}
-        size={100}
-        color="#fff"
-        style={styles.icon}
-      />
+      <Text style={styles.location}>{city}, {country}</Text>
+      <Ionicons name={weatherIcon} size={100} color="#fff" style={styles.icon} />
       <Text style={styles.currentTemp}>{current.temperature}°C</Text>
-      <Text style={styles.currentDetails}>
-        Wind Speed: {current.windSpeed} m/s
-      </Text>
-      <Text style={styles.sectionTitle}>Next 5 Hours</Text>
+      <Text style={styles.currentDetails}>Wind Speed: {current.windSpeed} m/s</Text>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-      >
-        {hourly.time.slice(0, 5).map((time, index) => (
-          <View style={styles.hourlyItem} key={index}>
-            <Text style={styles.hourlyTime}>
-              {new Date(time).getHours()}:00
-            </Text>
-            <Ionicons name="thermometer" size={20} color="#fff" />
-            <Text style={styles.hourlyTemp}>
-              {hourly.temperature[index]}°C
-            </Text>
-            <Ionicons name="water" size={20} color="#fff" />
-            <Text style={styles.hourlyHumidity}>
-              {hourly.humidity[index]}%
-            </Text>
+      <Text style={styles.sectionTitle}>Next 5 Hours</Text>
+      <View style={styles.list}>
+        {items.map((it, idx) => (
+          <View key={idx} style={styles.row}>
+            <Text style={styles.time}>{it.time}:00</Text>
+            <View style={styles.meta}>
+              <Ionicons name="thermometer" size={16} color="#fff" />
+              <Text style={styles.metaText}>{it.temp}°C</Text>
+            </View>
+            <View style={styles.meta}>
+              <Ionicons name="water" size={16} color="#fff" />
+              <Text style={styles.metaText}>{it.hum}%</Text>
+            </View>
           </View>
         ))}
-      </ScrollView>
+      </View>
     </View>
   )
 }
@@ -66,59 +56,30 @@ export default function WeatherCard({ weatherData }) {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 20,
     padding: 20,
     width: '100%',
-    marginTop: 20,
+    marginTop: 15,
   },
-  location: {
-    fontSize: 28,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  icon: {
-    marginVertical: 10,
-  },
-  currentTemp: {
-    fontSize: 48,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  currentDetails: {
-    fontSize: 18,
-    color: '#fff',
-    marginVertical: 5,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    color: '#fff',
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  scrollContainer: {
-    paddingHorizontal: 10,
-  },
-  hourlyItem: {
+  location: { fontSize: 28, color: '#fff', fontWeight: 'bold' },
+  icon: { marginVertical: 10 },
+  currentTemp: { fontSize: 48, color: '#fff', fontWeight: 'bold' },
+  currentDetails: { fontSize: 18, color: '#fff', marginVertical: 5 },
+
+  sectionTitle: { fontSize: 18, color: '#fff', fontWeight: '600', marginTop: 16, marginBottom: 8, alignSelf: 'flex-start' },
+
+  list: { width: '100%', gap: 6 },
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 15,
-    padding: 8,
-    width: 64,
-    marginRight: 10,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    gap: 16,
   },
-  hourlyTime: {
-    fontSize: 14,
-    color: '#fff',
-    marginBottom: 5,
-  },
-  hourlyTemp: {
-    fontSize: 14,
-    color: '#fff',
-  },
-  hourlyHumidity: {
-    fontSize: 14,
-    color: '#fff',
-  },
+  time: { width: 60, fontSize: 14, color: '#fff', fontWeight: '600' },
+  meta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  metaText: { fontSize: 14, color: '#fff' },
 })

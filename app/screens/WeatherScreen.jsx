@@ -52,7 +52,7 @@ export default function WeatherScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, marginTop: 80 }}>
+        <View style={{ flex: 1, marginTop: 60 }}>
           <LinearGradient colors={backgroundColors} style={styles.container}>
             <SearchBar onSearch={handleSearch} />
             {loading && (
