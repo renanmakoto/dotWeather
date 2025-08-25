@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 15,
   },
-  location: { fontSize: 28, color: '#fff', fontWeight: 'bold' },
+  location: { 
+    fontSize: 28, color: '#fff', fontWeight: 'bold' },
   icon: { marginVertical: 10 },
   currentTemp: { fontSize: 48, color: '#fff', fontWeight: 'bold' },
   currentDetails: { fontSize: 18, color: '#fff', marginVertical: 5 },
