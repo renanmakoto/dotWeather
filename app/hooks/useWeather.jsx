@@ -47,7 +47,7 @@ export default function useWeather() {
 
   // ---- Helpers ----
 
-  // Find the index in hourly.time that is >= current time string
+  //Find the index in hourly.time that is >= current time string
   function findCurrentHourIndex(hourlyTimes, currentTimeStr) {
     // Timestamps are like "2025-08-22T16:00" in the city's local time.
     // Try exact match first:
