@@ -25,6 +25,9 @@ TECHNOLOGIES USED:
 - [x] Functionalities
 - [x] Uploaded to Google Play Store
 
+<img src="https://github.com/user-attachments/assets/067a6365-c08c-4684-be2a-44e36723aa2a" style="width: 300px; height: 600px;"/>
+
+
 <p align="center">With ❤ by <img src=https://img.shields.io/badge/-dotExtension-black / <p/>
 
 </div>
