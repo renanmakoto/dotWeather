@@ -24,7 +24,7 @@ export default function useWeather() {
 
       const { latitude, longitude, name, country } = geoResponse.data.results[0]
 
-      // 2) Weather for that location, in the city’s local timezone
+      //Weather for that location, in the city’s local timezone
       const weatherResponse = await axios.get('https://api.open-meteo.com/v1/forecast', {
         params: {
           latitude,
