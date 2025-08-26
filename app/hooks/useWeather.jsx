@@ -31,7 +31,7 @@ export default function useWeather() {
           longitude,
           current_weather: true,
           hourly: 'temperature_2m,relative_humidity_2m,wind_speed_10m',
-          timezone: 'auto', // -> local time for the city
+          timezone: 'auto', //local time for the city
         },
       })
 
