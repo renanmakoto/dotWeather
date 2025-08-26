@@ -11,7 +11,7 @@ export default function useWeather() {
     setError(null)
 
     try {
-      // 1) Geocode city → lat/lon
+      //Geocode city → lat/lon
       const geoResponse = await axios.get('https://geocoding-api.open-meteo.com/v1/search', {
         params: { name: city, count: 1, language: 'en', format: 'json' },
       })
