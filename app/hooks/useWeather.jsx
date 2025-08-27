@@ -65,7 +65,7 @@ export default function useWeather() {
   const parseWeatherData = (data, cityName, countryName) => {
     const { current_weather, hourly } = data
 
-    // Determine the slice starting from "now" in the city’s local time
+    //Determine the slice starting from "now" in the city’s local time
     const startIdx = findCurrentHourIndex(hourly.time, current_weather.time)
     const endIdx = Math.min(startIdx + 5, hourly.time.length)
 
