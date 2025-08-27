@@ -45,7 +45,7 @@ export default function useWeather() {
     }
   }
 
-  // ---- Helpers ----
+  //Helpers
 
   //Find the index in hourly.time that is >= current time string
   function findCurrentHourIndex(hourlyTimes, currentTimeStr) {
