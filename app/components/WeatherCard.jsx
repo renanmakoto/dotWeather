@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
     color: '#fff', 
     fontWeight: 'bold' 
   },
-  currentDetails: { fontSize: 18, color: '#fff', marginVertical: 5 },
+  currentDetails: { 
+    fontSize: 18, color: '#fff', marginVertical: 5 },
 
   sectionTitle: { fontSize: 18, color: '#fff', fontWeight: '600', marginTop: 16, marginBottom: 8, alignSelf: 'flex-start' },
 
