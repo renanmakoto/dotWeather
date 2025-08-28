@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     position: 'absolute',
-    bottom: 15,
+    bottom: 5,
   },
   footerText: {
     fontSize: 16,
