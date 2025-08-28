@@ -82,7 +82,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { 
     fontSize: 18, 
-    color: '#fff', fontWeight: '600', marginTop: 16, marginBottom: 8, alignSelf: 'flex-start' },
+    color: '#fff', 
+    fontWeight: '600', marginTop: 16, marginBottom: 8, alignSelf: 'flex-start' },
 
   list: { width: '100%', gap: 6 },
   row: {
