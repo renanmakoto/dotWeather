@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
     color: '#fff', 
     marginVertical: 5 
   },
-  sectionTitle: { fontSize: 18, color: '#fff', fontWeight: '600', marginTop: 16, marginBottom: 8, alignSelf: 'flex-start' },
+  sectionTitle: { 
+    fontSize: 18, color: '#fff', fontWeight: '600', marginTop: 16, marginBottom: 8, alignSelf: 'flex-start' },
 
   list: { width: '100%', gap: 6 },
   row: {
