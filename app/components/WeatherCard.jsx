@@ -78,7 +78,8 @@ const styles = StyleSheet.create({
   currentDetails: { 
     fontSize: 18, 
     color: '#fff', 
-    marginVertical: 5 },
+    marginVertical: 5 
+  },
 
   sectionTitle: { fontSize: 18, color: '#fff', fontWeight: '600', marginTop: 16, marginBottom: 8, alignSelf: 'flex-start' },
 
