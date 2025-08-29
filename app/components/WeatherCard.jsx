@@ -86,7 +86,8 @@ const styles = StyleSheet.create({
     fontWeight: '600', 
     marginTop: 16, 
     marginBottom: 8, 
-    alignSelf: 'flex-start' },
+    alignSelf: 'flex-start' 
+  },
 
   list: { width: '100%', gap: 6 },
   row: {
