@@ -101,7 +101,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 16,
   },
-  time: { width: 60, fontSize: 14, color: '#fff', fontWeight: '600' },
+  time: { 
+    width: 60, fontSize: 14, color: '#fff', fontWeight: '600' },
   meta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   metaText: { fontSize: 14, color: '#fff' },
 })
