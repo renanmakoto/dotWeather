@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start' 
   },
   list: { 
-    width: '100%', gap: 6 },
+    width: '100%', 
+    gap: 6 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
