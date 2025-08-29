@@ -90,7 +90,8 @@ const styles = StyleSheet.create({
   },
   list: { 
     width: '100%', 
-    gap: 6 },
+    gap: 6 
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
