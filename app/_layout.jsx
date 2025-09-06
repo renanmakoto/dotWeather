@@ -20,7 +20,7 @@ export default function Layout() {
                 paddingBottom: 5,
               }}
             >
-              <Text
+              {/* <Text
                 style={{
                   fontSize: 20,
                   fontWeight: 'bold',
@@ -28,7 +28,7 @@ export default function Layout() {
                 }}
               >
                 dotWeather
-              </Text>
+              </Text> */}
             </View>
           ),
         }}
