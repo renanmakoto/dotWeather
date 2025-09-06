@@ -52,7 +52,7 @@ export default function WeatherScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, marginTop: 60 }}>
+        <View style={{ flex: 1, marginTop: 10 }}>
           <LinearGradient colors={backgroundColors} style={styles.container}>
             <SearchBar onSearch={handleSearch} />
             {loading && (
@@ -69,9 +69,9 @@ export default function WeatherScreen() {
                 </TouchableOpacity>
               </>
             )}
-            <View style={styles.footer}>
+            {/* <View style={styles.footer}> */}
               <Text style={styles.footerText}>2025 - by dotExtension</Text>
-            </View>
+            {/* </View> */}
           </LinearGradient>
         </View>
       </SafeAreaView>
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 16,
     color: '#ffffff',
+    marginTop: 20,
   },
   backButton: {
     marginTop: 10,

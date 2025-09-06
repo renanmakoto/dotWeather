@@ -14,10 +14,10 @@ export default function Layout() {
             <View
               style={{
                 backgroundColor: 'white',
-                height: 90,
+                height: 40,
                 justifyContent: 'flex-end',
                 alignItems: 'center',
-                paddingBottom: 5,
+                paddingBottom: 0,
               }}
             >
               {/* <Text
