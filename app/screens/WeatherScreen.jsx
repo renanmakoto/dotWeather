@@ -6,6 +6,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import SearchBar from '../components/SearchBar'
@@ -14,12 +16,8 @@ import useWeather from '../hooks/useWeather'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const getBackgroundColors = (condition, temperature) => {
-  if (temperature >= 25) {
-    return ['#FF7300', '#FEF253']
-  }
-  if (temperature < 15) {
-    return ['#00C6FB', '#005BEA']
-  }
+  if (temperature >= 25) return ['#FF7300', '#FEF253']
+  if (temperature < 15) return ['#00C6FB', '#005BEA']
   return ['#4facfe', '#00f2fe']
 }
 
@@ -32,8 +30,7 @@ export default function WeatherScreen() {
     fetchWeather(city)
     setShowWeather(true)
     const temperature = weatherData?.current?.temperature || 20
-    const newBackground = getBackgroundColors(null, temperature)
-    setBackgroundColors(newBackground)
+    setBackgroundColors(getBackgroundColors(null, temperature))
   }
 
   const handleBack = () => {
@@ -44,36 +41,41 @@ export default function WeatherScreen() {
   useEffect(() => {
     if (weatherData) {
       const temperature = weatherData?.current?.temperature || 20
-      const newBackground = getBackgroundColors(null, temperature)
-      setBackgroundColors(newBackground)
+      setBackgroundColors(getBackgroundColors(null, temperature))
     }
   }, [weatherData])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, marginTop: 10 }}>
-          <LinearGradient colors={backgroundColors} style={styles.container}>
-            <SearchBar onSearch={handleSearch} />
-            {loading && (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Loading...</Text>
-              </View>
-            )}
-            {error && <Text style={styles.errorText}>{error}</Text>}
-            {showWeather && weatherData && !loading && !error && (
-              <>
-                <WeatherCard weatherData={weatherData} />
-                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                  <Text style={styles.backButtonText}>Back to Home</Text>
-                </TouchableOpacity>
-              </>
-            )}
-            {/* <View style={styles.footer}> */}
-              <Text style={styles.footerText}>2025 - by dotExtension</Text>
-            {/* </View> */}
-          </LinearGradient>
-        </View>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={{ flex: 1, marginTop: 10 }}>
+            <LinearGradient colors={backgroundColors} style={styles.container}>
+              <SearchBar onSearch={handleSearch} />
+              {loading && (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.loadingText}>Loading...</Text>
+                </View>
+              )}
+              {error && <Text style={styles.errorText}>{error}</Text>}
+              {showWeather && weatherData && !loading && !error && (
+                <>
+                  <WeatherCard weatherData={weatherData} />
+                  <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                    <Text style={styles.backButtonText}>Back to Home</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </LinearGradient>
+          </View>
+          {/* Footer stays fixed at bottom regardless of keyboard */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>2025 - by dotExtension</Text>
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   )
@@ -86,13 +88,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
   },
-  loadingContainer: {
-    marginTop: 50,
-  },
-  loadingText: {
-    fontSize: 18,
-    color: '#ffffff',
-  },
+  loadingContainer: { marginTop: 50 },
+  loadingText: { fontSize: 18, color: '#fff' },
   errorText: {
     marginTop: 20,
     fontSize: 18,
@@ -104,13 +101,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     position: 'absolute',
-    bottom: 5,
+    bottom: 5, // fixed at bottom of screen
   },
-  footerText: {
-    fontSize: 16,
-    color: '#ffffff',
-    marginTop: 20,
-  },
+  footerText: { fontSize: 16, color: '#fff' },
   backButton: {
     marginTop: 10,
     backgroundColor: 'rgba(255,255,255,0.3)',
@@ -118,8 +111,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
   },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
+  backButtonText: { color: '#fff', fontSize: 16 },
 })
