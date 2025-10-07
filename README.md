@@ -20,6 +20,11 @@ TECHNOLOGIES USED:
 - [x] Functionalities
 - [x] Uploaded to Google Play Store
 
+<h4 align="center"> 
+	Google Play Store link to install dotWeather:
+</h4>
+<p align="center">https://play.google.com/store/apps/details?id=com.dotextension.dotweather</p>
+
 <img src="https://github.com/user-attachments/assets/067a6365-c08c-4684-be2a-44e36723aa2a" style="width: 300px; height: 600px;"/>
 
 
