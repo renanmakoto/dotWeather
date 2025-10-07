@@ -14,10 +14,7 @@ TECHNOLOGIES USED:
 <a href="https://developer.android.com/studio"><img src="https://1.bp.blogspot.com/-LgTa-xDiknI/X4EflN56boI/AAAAAAAAPuk/24YyKnqiGkwRS9-_9suPKkfsAwO4wHYEgCLcBGAsYHQ/s0/image9.png" style="width: 64px; height: 64px" /></a>
 <a href="https://expo.dev/"><img src="https://bitrise-steplib-collection.s3.amazonaws.com/steps/expo-detach/assets/icon.svg" style="width: 64px; height: 64px" /></a>
 
-<h4 align="center"> 
-	Google Play Store link to install dotWeather:
-</h4>
-<p align="center">https://play.google.com/store/apps/details?id=com.dotextension.dotweather</p>
+
 
 ### Features
 
