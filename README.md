@@ -27,7 +27,7 @@ TECHNOLOGIES USED:
 
 <br>
 
-<img src="https://github.com/user-attachments/assets/067a6365-c08c-4684-be2a-44e36723aa2a" style="width: 300px; height: 600px;"/>
+<img src="./assets/sample.gif" style="width: 300px; height: 600px;"/>
 
 <br>
 <br>
