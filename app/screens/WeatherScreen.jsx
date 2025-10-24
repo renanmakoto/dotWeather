@@ -68,7 +68,6 @@ export default function WeatherScreen() {
           </View>
         </KeyboardAvoidingView>
 
-        {/* Footer is OUTSIDE the keyboard-aware area and pinned */}
         <View style={[styles.footer, { bottom: 5 + insets.bottom }]}>
           <Text style={styles.footerText}>2025 - by dotExtension</Text>
         </View>
