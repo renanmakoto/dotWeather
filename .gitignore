@@ -1,7 +1,7 @@
 # Node
 node_modules/
-npm-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-error.log*
 yarn.lock
 
 # Expo
@@ -16,6 +16,17 @@ android/
 *.apk
 *.aab
 *.keystore
+*.jks
+
+# iOS
+ios/
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata/
+Pods/
+DerivedData/
+*.ipa
+*.app
 
 # macOS
 .DS_Store
@@ -40,7 +51,9 @@ Desktop.ini
 
 # Environment variables
 .env
-.env.*.local
+.env.*
+!.env.example
+!.env.*.example
 
 # Metro bundler cache
 metro-cache/
@@ -51,3 +64,9 @@ metro-cache/
 *.swp
 .idea/
 *.orig
+
+# Credentials
+*.p12
+*.p8
+*.pem
+*.mobileprovision
