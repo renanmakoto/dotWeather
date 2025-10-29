@@ -5,95 +5,195 @@ import {
   Text,
   TouchableWithoutFeedback,
   Keyboard,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import SearchBar from '../components/SearchBar'
 import WeatherCard from '../components/WeatherCard'
 import useWeather from '../hooks/useWeather'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-
-const getBackgroundColors = (_, t) =>
-  t >= 25 ? ['#FF7300', '#FEF253'] : t < 15 ? ['#00C6FB', '#005BEA'] : ['#4facfe', '#00f2fe']
+import {
+  getDefaultPresentation,
+  getWeatherPresentation,
+} from '../../lib/weatherPresentation'
+import AnimatedBackground from '../components/AnimatedBackground'
 
 export default function WeatherScreen() {
   const { weatherData, fetchWeather, loading, error } = useWeather()
-  const [showWeather, setShowWeather] = useState(false)
-  const [backgroundColors, setBackgroundColors] = useState(['#4facfe', '#00f2fe'])
+  const [presentation, setPresentation] = useState(getDefaultPresentation())
   const insets = useSafeAreaInsets()
+  const showAdSlot = false
 
   const handleSearch = city => fetchWeather(city)
 
-  const handleBack = () => {
-    setShowWeather(false)
-    setBackgroundColors(['#4facfe', '#00f2fe'])
-  }
-
   useEffect(() => {
-    if (weatherData) {
-      const t = weatherData.current?.temperature ?? 20
-      setBackgroundColors(getBackgroundColors(null, t))
-      setShowWeather(true)
+    if (weatherData?.current) {
+      const { weatherCode, time } = weatherData.current
+      setPresentation(getWeatherPresentation(weatherCode, time))
+    } else {
+      setPresentation(getDefaultPresentation())
     }
   }, [weatherData])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <AnimatedBackground
+        colors={presentation.gradient}
+        effect={presentation.effect}
+        accentColor={presentation.accent}
+        mode={presentation.mode}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <KeyboardAvoidingView
+            style={styles.flex}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={[
+                styles.scrollContent,
+                { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 32 },
+              ]}
+            >
+              <SearchBar
+                onSearch={handleSearch}
+                accentColor={presentation.accent}
+                loading={loading}
+              />
 
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-          <View style={{ flex: 1, marginTop: 10 }}>
-            <LinearGradient colors={backgroundColors} style={styles.container}>
-              <SearchBar onSearch={handleSearch} />
-              {loading && (
-                <View style={styles.loadingContainer}>
-                  <Text style={styles.loadingText}>Loading...</Text>
+              {error && (
+                <View style={styles.errorPill}>
+                  <Text style={styles.errorText}>{error}</Text>
                 </View>
               )}
-              {error && <Text style={styles.errorText}>{error}</Text>}
-              {showWeather && weatherData && !loading && !error && (
-                <>
-                  <WeatherCard weatherData={weatherData} />
-                  <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                    <Text style={styles.backButtonText}>Back to Home</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-            </LinearGradient>
-          </View>
-        </KeyboardAvoidingView>
 
-        <View style={[styles.footer, { bottom: 5 + insets.bottom }]}>
-          <Text style={styles.footerText}>2025 - by dotExtension</Text>
-        </View>
-      </SafeAreaView>
+              {loading && (
+                <View style={styles.loadingContainer}>
+                  <View style={styles.loadingDot} />
+                  <Text style={styles.loadingText}>Fetching latest weather</Text>
+                </View>
+              )}
+
+              {!loading && !error && !weatherData && (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyHeadline}>Track any city in seconds.</Text>
+                  <Text style={styles.emptyCopy}>
+                    Search above to reveal temperature trends and insights tailored to your next
+                    destination.
+                  </Text>
+                </View>
+              )}
+
+              {weatherData && !loading && !error && (
+                <WeatherCard weatherData={weatherData} presentation={presentation} />
+              )}
+
+              {showAdSlot && (
+                <View style={styles.adContainer}>
+                  <Text style={styles.adLabel}>Ad space available</Text>
+                  <Text style={styles.adCopy}>
+                    Reserve this spot for promotions, partners, or local travel tips.
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
+          </KeyboardAvoidingView>
+
+          <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+            <Text style={styles.footerText}>2025 · dotExtension</Text>
+          </View>
+        </SafeAreaView>
+      </AnimatedBackground>
     </TouchableWithoutFeedback>
   )
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 20 },
-  loadingContainer: { marginTop: 50 },
-  loadingText: { fontSize: 18, color: '#ffffff' },
-  errorText: { marginTop: 20, fontSize: 18, color: '#ff3333', textAlign: 'center' },
-  footer: {
-    position: 'absolute',
-    width: '100%',
+  safeArea: {
+    flex: 1,
+  },
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+    gap: 24,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    gap: 12,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
   },
-  footerText: { fontSize: 16, color: '#ffffff' },
-  backButton: {
-    marginTop: 10,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
+  loadingDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
   },
-  backButtonText: { color: '#fff', fontSize: 16 },
+  loadingText: {
+    fontSize: 16,
+    color: '#ffffff',
+  },
+  errorPill: {
+    backgroundColor: 'rgba(255,99,71,0.22)',
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  errorText: {
+    color: '#ffecec',
+    fontSize: 15,
+  },
+  emptyState: {
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    borderRadius: 20,
+    padding: 24,
+    gap: 12,
+  },
+  emptyHeadline: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  emptyCopy: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.84)',
+    lineHeight: 22,
+  },
+  footer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  footerText: {
+    color: 'rgba(255,255,255,0.72)',
+    fontSize: 14,
+  },
+  adContainer: {
+    backgroundColor: 'rgba(0,173,162,0.16)',
+    borderRadius: 18,
+    padding: 20,
+    gap: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,173,162,0.32)',
+    minHeight: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  adLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  adCopy: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: 'rgba(255,255,255,0.78)',
+    textAlign: 'center',
+  },
 })
