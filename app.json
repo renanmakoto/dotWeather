@@ -2,7 +2,7 @@
   "expo": {
     "name": "dotWeather",
     "slug": "dotWeather",
-    "version": "1.0.0",
+    "version": "v1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon_2.png",
     "scheme": "dotweather",
@@ -23,7 +23,7 @@
     },
     "android": {
       "package": "com.dotextension.dotweather",
-      "versionCode": 17,
+      "versionCode": 18,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon_2.png",
         "backgroundColor": "#ffffff"
