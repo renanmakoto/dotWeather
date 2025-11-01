@@ -29,6 +29,7 @@ export default function useWeather() {
           longitude,
           current_weather: true,
           hourly: 'temperature_2m,relative_humidity_2m,wind_speed_10m',
+          daily: 'sunrise,sunset',
           timezone: 'auto', //local time for the city
         },
       })
@@ -61,7 +62,11 @@ export default function useWeather() {
   }
 
   const parseWeatherData = (data, cityName, countryName) => {
-    const { current_weather, hourly } = data
+    const { current_weather, hourly, daily } = data
+    const currentDate = current_weather?.time?.split?.('T')?.[0]
+    const dailyIndex = currentDate && Array.isArray(daily?.time) ? daily.time.findIndex(day => day === currentDate) : -1
+    const sunrise = dailyIndex !== -1 ? daily?.sunrise?.[dailyIndex] ?? null : daily?.sunrise?.[0] ?? null
+    const sunset = dailyIndex !== -1 ? daily?.sunset?.[dailyIndex] ?? null : daily?.sunset?.[0] ?? null
 
     //Determine the slice starting from "now" in the city’s local time
     const startIdx = findCurrentHourIndex(hourly.time, current_weather.time)
@@ -79,6 +84,8 @@ export default function useWeather() {
         temperature: current_weather.temperature,
         windSpeed: current_weather.wind_speed,
         weatherCode: current_weather.weathercode,
+        sunrise,
+        sunset,
       },
       hourly: {
         time: times,

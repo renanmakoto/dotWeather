@@ -29,8 +29,8 @@ export default function WeatherScreen() {
 
   useEffect(() => {
     if (weatherData?.current) {
-      const { weatherCode, time } = weatherData.current
-      setPresentation(getWeatherPresentation(weatherCode, time))
+      const { weatherCode, time, sunrise, sunset } = weatherData.current
+      setPresentation(getWeatherPresentation(weatherCode, time, { sunrise, sunset }))
     } else {
       setPresentation(getDefaultPresentation())
     }
