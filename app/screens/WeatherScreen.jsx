@@ -100,7 +100,7 @@ export default function WeatherScreen() {
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+          <View style={[styles.footer, { paddingBottom: insets.bottom + 6 }]}>
             <View style={styles.footerBadge}>
               <Text style={styles.footerText}>2025 · dotExtension</Text>
             </View>
