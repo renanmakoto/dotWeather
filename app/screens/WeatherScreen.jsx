@@ -101,7 +101,9 @@ export default function WeatherScreen() {
           </KeyboardAvoidingView>
 
           <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-            <Text style={styles.footerText}>2025 · dotExtension</Text>
+            <View style={styles.footerBadge}>
+              <Text style={styles.footerText}>2025 · dotExtension</Text>
+            </View>
           </View>
         </SafeAreaView>
       </AnimatedBackground>
@@ -169,8 +171,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  footerBadge: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.32)',
+    backgroundColor: 'rgba(0,0,0,0.28)',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
   footerText: {
-    color: 'rgba(255,255,255,0.72)',
+    color: 'rgba(230,240,255,0.92)',
     fontSize: 14,
   },
   adContainer: {
