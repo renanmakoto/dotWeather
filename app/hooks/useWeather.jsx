@@ -48,7 +48,6 @@ export default function useWeather() {
     let idx = hourlyTimes.indexOf(currentTimeStr)
     if (idx !== -1) return idx
 
-    //If exact not found, find the first time >= currentTimeStr
     idx = hourlyTimes.findIndex(t => t >= currentTimeStr)
     if (idx !== -1) return idx
 
