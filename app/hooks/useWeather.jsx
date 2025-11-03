@@ -51,7 +51,6 @@ export default function useWeather() {
     idx = hourlyTimes.findIndex(t => t >= currentTimeStr)
     if (idx !== -1) return idx
 
-    //Fallback: last hours of array
     return Math.max(0, hourlyTimes.length - 5)
   }
 
