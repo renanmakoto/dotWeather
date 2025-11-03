@@ -61,7 +61,6 @@ export default function useWeather() {
     const sunrise = dailyIndex !== -1 ? daily?.sunrise?.[dailyIndex] ?? null : daily?.sunrise?.[0] ?? null
     const sunset = dailyIndex !== -1 ? daily?.sunset?.[dailyIndex] ?? null : daily?.sunset?.[0] ?? null
 
-    //Determine the slice starting from "now" in the city’s local time
     const startIdx = findCurrentHourIndex(hourly.time, current_weather.time)
     const endIdx = Math.min(startIdx + 5, hourly.time.length)
 
