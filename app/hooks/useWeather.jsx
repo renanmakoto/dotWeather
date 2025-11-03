@@ -45,7 +45,6 @@ export default function useWeather() {
   }
 
   function findCurrentHourIndex(hourlyTimes, currentTimeStr) {
-    //Try exact match first:
     let idx = hourlyTimes.indexOf(currentTimeStr)
     if (idx !== -1) return idx
 
