@@ -72,7 +72,7 @@ export default function useWeather() {
     return {
       location: { city: cityName, country: countryName },
       current: {
-        time: current_weather.time,          //already in local city time
+        time: current_weather.time,
         temperature: current_weather.temperature,
         windSpeed: current_weather.wind_speed,
         weatherCode: current_weather.weathercode,
