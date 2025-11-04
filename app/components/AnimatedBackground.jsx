@@ -10,6 +10,7 @@ export default function AnimatedBackground({
   effect = 'ambient',
   accentColor = '#ffffff',
   mode = 'day',
+  windSpeed = 0,
   children,
 }) {
   const showAmbient = mode !== 'night' && ['clear', 'breeze', 'ambient'].includes(effect)
@@ -18,7 +19,7 @@ export default function AnimatedBackground({
     <LinearGradient colors={colors} style={styles.container}>
       {showAmbient && <AmbientBlobs accentColor={accentColor} />}
       <HorizonGlow mode={mode} />
-      <WeatherEffectLayer effect={effect} mode={mode} />
+      <WeatherEffectLayer effect={effect} mode={mode} windSpeed={windSpeed} />
       {children}
     </LinearGradient>
   )
@@ -225,13 +226,19 @@ function HorizonGlow({ mode }) {
   )
 }
 
-function WeatherEffectLayer({ effect, mode }) {
+function WeatherEffectLayer({ effect, mode, windSpeed = 0 }) {
+  const fallbackStrength = effect === 'breeze' ? 'light' : null
+  const measuredStrength = getWindStrength(windSpeed)
+  const windStrength = mergeWindStrength(fallbackStrength, measuredStrength)
+  const windLayer = windStrength ? <WindLayer mode={mode} strength={windStrength} /> : null
+
   if (effect === 'clear') {
     if (mode === 'night') {
       return (
         <>
           <MoonLayer />
           <StarLayer density={32} />
+          {windLayer}
         </>
       )
     }
@@ -240,6 +247,7 @@ function WeatherEffectLayer({ effect, mode }) {
       <>
         <SunLayer />
         <SparkleLayer density={10} tintColor="rgba(255,236,179,0.85)" />
+        {windLayer}
       </>
     )
   }
@@ -251,6 +259,7 @@ function WeatherEffectLayer({ effect, mode }) {
           <MoonLayer />
           <CloudLayer variant="soft-night" />
           <StarLayer density={24} />
+          {windLayer}
         </>
       )
     }
@@ -260,6 +269,7 @@ function WeatherEffectLayer({ effect, mode }) {
         <SunLayer withClouds />
         <CloudLayer variant="soft" />
         <SparkleLayer density={14} tintColor="rgba(255,247,213,0.8)" />
+        {windLayer}
       </>
     )
   }
@@ -269,6 +279,7 @@ function WeatherEffectLayer({ effect, mode }) {
       <>
         <CloudLayer variant={mode === 'night' ? 'storm-night' : 'storm-day'} />
         <RainLayer />
+        {windLayer}
         <MistLayer mode={mode} density="rain" />
       </>
     )
@@ -279,6 +290,7 @@ function WeatherEffectLayer({ effect, mode }) {
       <>
         <CloudLayer variant={mode === 'night' ? 'dense-night' : 'dense-day'} />
         <RainLayer intensity="light" />
+        {windLayer}
         <MistLayer mode={mode} density="light" />
       </>
     )
@@ -289,6 +301,7 @@ function WeatherEffectLayer({ effect, mode }) {
       <>
         <CloudLayer variant={mode === 'night' ? 'storm-night' : 'storm-day'} />
         <StormLayer />
+        {windLayer}
         <MistLayer mode={mode} density="storm" />
       </>
     )
@@ -299,6 +312,7 @@ function WeatherEffectLayer({ effect, mode }) {
       <>
         <CloudLayer variant={mode === 'night' ? 'snow-night' : 'snow-day'} />
         <SnowLayer />
+        {windLayer}
         <MistLayer mode={mode} density="snow" />
       </>
     )
@@ -308,16 +322,27 @@ function WeatherEffectLayer({ effect, mode }) {
     return (
       <>
         <CloudLayer variant={mode === 'night' ? 'dense-night' : 'dense-day'} />
+        {windLayer}
         <MistLayer mode={mode} density="light" />
       </>
     )
   }
 
   if (mode === 'night') {
-    return <StarLayer density={18} />
+    return (
+      <>
+        <StarLayer density={18} />
+        {windLayer}
+      </>
+    )
   }
 
-  return <SparkleLayer density={8} tintColor="rgba(255,255,255,0.24)" />
+  return (
+    <>
+      <SparkleLayer density={8} tintColor="rgba(255,255,255,0.24)" />
+      {windLayer}
+    </>
+  )
 }
 
 function SunLayer({ withClouds = false }) {
@@ -569,6 +594,108 @@ function StarLayer({ density = 24 }) {
                 height: star.size,
                 opacity,
                 transform: [{ scale }],
+              },
+            ]}
+          />
+        )
+      })}
+    </View>
+  )
+}
+
+const WIND_STRENGTH_PRIORITY = {
+  light: 1,
+  medium: 2,
+  heavy: 3,
+}
+
+function getWindStrength(speed) {
+  if (!Number.isFinite(speed)) {
+    return null
+  }
+
+  const magnitude = Math.abs(speed)
+  if (magnitude >= 14) return 'heavy'
+  if (magnitude >= 8) return 'medium'
+  if (magnitude >= 4) return 'light'
+  return null
+}
+
+function mergeWindStrength(base, overlay) {
+  if (!base) return overlay ?? null
+  if (!overlay) return base
+  return WIND_STRENGTH_PRIORITY[overlay] > WIND_STRENGTH_PRIORITY[base] ? overlay : base
+}
+
+function WindLayer({ mode = 'day', strength = 'medium' }) {
+  const streamCount = strength === 'light' ? 7 : strength === 'heavy' ? 14 : 9
+  const baseColor = mode === 'night' ? 'rgba(192,214,255,0.52)' : 'rgba(255,255,255,0.6)'
+  const trailColor = mode === 'night' ? 'rgba(192,214,255,0.2)' : 'rgba(255,255,255,0.24)'
+  const fadeColor = mode === 'night' ? 'rgba(192,214,255,0)' : 'rgba(255,255,255,0)'
+
+  const streams = useMemo(
+    () =>
+      Array.from({ length: streamCount }).map(() => ({
+        progress: new Animated.Value(Math.random()),
+        length: WINDOW_WIDTH * (0.36 + Math.random() * 0.32),
+        top: WINDOW_HEIGHT * 0.22 + Math.random() * WINDOW_HEIGHT * 0.42,
+        thickness: 2 + Math.random() * 2.4,
+        curvature: (Math.random() * 2 - 1) * 18,
+        opacityTarget: 0.2 + Math.random() * 0.3,
+        delay: Math.random() * 2400,
+        duration: 4200 + Math.random() * 2400,
+      })),
+    [streamCount]
+  )
+
+  useEffect(() => {
+    const loops = streams.map(stream => {
+      stream.progress.setValue(0)
+      const animation = Animated.timing(stream.progress, {
+        toValue: 1,
+        duration: stream.duration,
+        delay: stream.delay,
+        easing: Easing.inOut(Easing.quad),
+        useNativeDriver: true,
+      })
+      const loop = Animated.loop(animation, { resetBeforeIteration: true })
+      loop.start()
+      return loop
+    })
+
+    return () => loops.forEach(loop => loop.stop())
+  }, [streams])
+
+  return (
+    <View pointerEvents="none" style={styles.effectOverlay}>
+      {streams.map((stream, index) => {
+        const translateX = stream.progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-stream.length - 90, WINDOW_WIDTH + 90],
+        })
+        const translateY = stream.progress.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [0, stream.curvature, 0],
+        })
+        const opacity = stream.progress.interpolate({
+          inputRange: [0, 0.2, 0.7, 1],
+          outputRange: [0, stream.opacityTarget, stream.opacityTarget * 0.6, 0],
+        })
+
+        return (
+          <AnimatedLinearGradient
+            key={`wind-${index}`}
+            colors={[trailColor, baseColor, fadeColor]}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={[
+              styles.windStream,
+              {
+                top: stream.top,
+                height: stream.thickness,
+                width: stream.length,
+                opacity,
+                transform: [{ translateX }, { translateY }],
               },
             ]}
           />
@@ -1171,6 +1298,10 @@ const styles = StyleSheet.create({
   lightningFlash: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#FFFFFF',
+  },
+  windStream: {
+    position: 'absolute',
+    borderRadius: 999,
   },
   sparkle: {
     position: 'absolute',

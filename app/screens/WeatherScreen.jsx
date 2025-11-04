@@ -43,6 +43,7 @@ export default function WeatherScreen() {
         effect={presentation.effect}
         accentColor={presentation.accent}
         mode={presentation.mode}
+        windSpeed={weatherData?.current?.windSpeed ?? 0}
       >
         <SafeAreaView style={styles.safeArea}>
           <KeyboardAvoidingView
