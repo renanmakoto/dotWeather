@@ -41,6 +41,8 @@ export default function ForecastStrip({ items = [], accentColor = '#ffffff' }) {
 
 const styles = StyleSheet.create({
   row: {
+    flexGrow: 1,
+    justifyContent: 'center',
     gap: 12,
     paddingHorizontal: 4,
   },
