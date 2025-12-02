@@ -1,9 +1,137 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
+import { hexToRgba } from '../../lib/colorUtils'
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient)
 const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window')
+
+const AMBIENT_EFFECTS = ['clear', 'breeze', 'ambient']
+
+const TIMING = {
+  FLOAT_PRIMARY: 18000,
+  FLOAT_SECONDARY: 20000,
+  SHIMMER: 9000,
+  HORIZON_PULSE: 7000,
+  SUN_ROTATION: 18000,
+  SUN_PULSE: 4200,
+  SUN_CLOUD_DRIFT: 9000,
+  MOON_BOB: 5200,
+  MOON_GLOW: 6800,
+  STAR_TWINKLE_BASE: 3600,
+  STAR_TWINKLE_VARIANCE: 3200,
+  WIND_BASE: 4200,
+  WIND_VARIANCE: 2400,
+  RAIN_BASE: 2200,
+  RAIN_VARIANCE: 1200,
+  SNOW_BASE: 9000,
+  SNOW_VARIANCE: 4000,
+  MIST_PULSE: 5400,
+  SPARKLE_BASE: 2600,
+  SPARKLE_VARIANCE: 2000,
+  LIGHTNING_DELAY_BASE: 2200,
+  LIGHTNING_DELAY_VARIANCE: 2400,
+}
+
+const COUNTS = {
+  SUN_RAYS: 12,
+  STARS_DEFAULT: 24,
+  RAIN_LIGHT: 18,
+  RAIN_MODERATE: 28,
+  RAIN_HEAVY: 40,
+  SNOW_FLAKES: 20,
+  WIND_LIGHT: 7,
+  WIND_MEDIUM: 9,
+  WIND_HEAVY: 14,
+  SPARKLES_DEFAULT: 12,
+}
+
+const SIZES = {
+  STAR_MIN: 1.2,
+  STAR_MAX: 3.0,
+}
+
+const WIND_THRESHOLDS = {
+  LIGHT: 4,
+  MEDIUM: 8,
+  HEAVY: 14,
+}
+
+const WIND_STRENGTH_PRIORITY = {
+  light: 1,
+  medium: 2,
+  heavy: 3,
+}
+
+const GRADIENTS = {
+  HORIZON_NIGHT: ['rgba(6,11,30,0)', 'rgba(26,48,92,0.42)', 'rgba(102,142,210,0.26)'],
+  HORIZON_DAY: ['rgba(255,255,255,0)', 'rgba(255,220,168,0.55)', 'rgba(255,182,98,0.32)'],
+  MIST_NIGHT: ['rgba(8,16,36,0)', 'rgba(36,54,92,0.42)', 'rgba(102,132,181,0.38)'],
+  MIST_DAY: ['rgba(255,255,255,0)', 'rgba(214,233,255,0.4)', 'rgba(207,223,241,0.46)'],
+}
+
+const CLOUD_CONFIGS = {
+  soft: {
+    count: 2, sizeBase: 200, sizeVariance: 60, topStart: 110, spacing: 92, spacingJitter: 18,
+    durationBase: 26000, durationVariance: 7000, opacityBase: 0.16, opacityRange: 0.08,
+    startOffset: -160, color: 'rgba(255,255,255,0.36)',
+  },
+  'soft-night': {
+    count: 2, sizeBase: 200, sizeVariance: 60, topStart: 120, spacing: 92, spacingJitter: 18,
+    durationBase: 32000, durationVariance: 8000, opacityBase: 0.14, opacityRange: 0.08,
+    startOffset: -170, color: 'rgba(136,162,210,0.3)',
+  },
+  'dense-day': {
+    count: 4, sizeBase: 240, sizeVariance: 100, topStart: 80, spacing: 110, spacingJitter: 42,
+    durationBase: 25000, durationVariance: 6000, opacityBase: 0.26, opacityRange: 0.14,
+    startOffset: -210, color: 'rgba(255,255,255,0.4)',
+  },
+  'dense-night': {
+    count: 4, sizeBase: 240, sizeVariance: 110, topStart: 70, spacing: 110, spacingJitter: 38,
+    durationBase: 29000, durationVariance: 7000, opacityBase: 0.26, opacityRange: 0.14,
+    startOffset: -210, color: 'rgba(118,144,198,0.38)',
+  },
+  'storm-day': {
+    count: 5, sizeBase: 280, sizeVariance: 120, topStart: 42, spacing: 90, spacingJitter: 32,
+    durationBase: 23000, durationVariance: 5000, opacityBase: 0.34, opacityRange: 0.18,
+    startOffset: -240, color: 'rgba(96,112,142,0.52)',
+  },
+  'storm-night': {
+    count: 5, sizeBase: 280, sizeVariance: 120, topStart: 36, spacing: 90, spacingJitter: 30,
+    durationBase: 26000, durationVariance: 6000, opacityBase: 0.34, opacityRange: 0.18,
+    startOffset: -240, color: 'rgba(58,76,112,0.56)',
+  },
+  'snow-day': {
+    count: 4, sizeBase: 240, sizeVariance: 90, topStart: 80, spacing: 112, spacingJitter: 40,
+    durationBase: 28000, durationVariance: 7000, opacityBase: 0.24, opacityRange: 0.12,
+    startOffset: -210, color: 'rgba(232,242,255,0.44)',
+  },
+  'snow-night': {
+    count: 4, sizeBase: 240, sizeVariance: 90, topStart: 70, spacing: 112, spacingJitter: 36,
+    durationBase: 32000, durationVariance: 7000, opacityBase: 0.22, opacityRange: 0.12,
+    startOffset: -210, color: 'rgba(176,198,236,0.4)',
+  },
+  default: {
+    count: 3, sizeBase: 220, sizeVariance: 140, topStart: 60, spacing: 120, spacingJitter: 40,
+    durationBase: 28000, durationVariance: 9000, opacityBase: 0.18, opacityRange: 0.12,
+    startOffset: -200, color: 'rgba(255,255,255,0.32)',
+  },
+}
+
+function getWindStrength(speed) {
+  if (!Number.isFinite(speed)) return null
+  const magnitude = Math.abs(speed)
+  if (magnitude >= WIND_THRESHOLDS.HEAVY) return 'heavy'
+  if (magnitude >= WIND_THRESHOLDS.MEDIUM) return 'medium'
+  if (magnitude >= WIND_THRESHOLDS.LIGHT) return 'light'
+  return null
+}
+
+function mergeWindStrength(base, overlay) {
+  if (!base) return overlay ?? null
+  if (!overlay) return base
+  return WIND_STRENGTH_PRIORITY[overlay] > WIND_STRENGTH_PRIORITY[base] ? overlay : base
+}
 
 export default function AnimatedBackground({
   colors,
@@ -13,7 +141,7 @@ export default function AnimatedBackground({
   windSpeed = 0,
   children,
 }) {
-  const showAmbient = mode !== 'night' && ['clear', 'breeze', 'ambient'].includes(effect)
+  const showAmbient = mode !== 'night' && AMBIENT_EFFECTS.includes(effect)
 
   return (
     <LinearGradient colors={colors} style={styles.container}>
@@ -29,15 +157,14 @@ function AmbientBlobs({ accentColor }) {
   const floatPrimary = useRef(new Animated.Value(0)).current
   const floatSecondary = useRef(new Animated.Value(0)).current
   const shimmer = useRef(new Animated.Value(0)).current
+
   const accentSoft = useMemo(() => hexToRgba(accentColor, 0.12), [accentColor])
   const accentFaint = useMemo(() => hexToRgba(accentColor, 0.05), [accentColor])
   const accentGlow = useMemo(() => hexToRgba(accentColor, 0.16), [accentColor])
 
   useEffect(() => {
-    const animations = []
-
-    const createFloat = (animatedValue, delay = 0, duration = 16000) => {
-      const loop = Animated.loop(
+    const createFloatAnimation = (animatedValue, delay, duration) => {
+      return Animated.loop(
         Animated.sequence([
           Animated.delay(delay),
           Animated.timing(animatedValue, {
@@ -55,103 +182,54 @@ function AmbientBlobs({ accentColor }) {
         ]),
         { resetBeforeIteration: true }
       )
-
-      loop.start()
-      animations.push(loop)
     }
 
-    createFloat(floatPrimary, 0, 18000)
-    createFloat(floatSecondary, 3600, 20000)
+    const animations = [
+      createFloatAnimation(floatPrimary, 0, TIMING.FLOAT_PRIMARY),
+      createFloatAnimation(floatSecondary, 3600, TIMING.FLOAT_SECONDARY),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(shimmer, {
+            toValue: 1,
+            duration: TIMING.SHIMMER,
+            easing: Easing.inOut(Easing.quad),
+            useNativeDriver: true,
+          }),
+          Animated.timing(shimmer, {
+            toValue: 0,
+            duration: TIMING.SHIMMER,
+            easing: Easing.inOut(Easing.quad),
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+    ]
 
-    const shimmerLoop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(shimmer, {
-          toValue: 1,
-          duration: 9000,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(shimmer, {
-          toValue: 0,
-          duration: 9000,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ])
-    )
-
-    shimmerLoop.start()
-    animations.push(shimmerLoop)
-
-    return () => {
-      animations.forEach(animation => animation.stop())
-    }
+    animations.forEach((anim) => anim.start())
+    return () => animations.forEach((anim) => anim.stop())
   }, [floatPrimary, floatSecondary, shimmer])
 
   const blobPrimaryStyle = {
     transform: [
-      {
-        translateX: floatPrimary.interpolate({
-          inputRange: [0, 1],
-          outputRange: [-60, 40],
-        }),
-      },
-      {
-        translateY: floatPrimary.interpolate({
-          inputRange: [0, 1],
-          outputRange: [-20, 30],
-        }),
-      },
-      {
-        scale: floatPrimary.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 1.18],
-        }),
-      },
-      {
-        rotate: floatPrimary.interpolate({
-          inputRange: [0, 1],
-          outputRange: ['0deg', '12deg'],
-        }),
-      },
+      { translateX: floatPrimary.interpolate({ inputRange: [0, 1], outputRange: [-60, 40] }) },
+      { translateY: floatPrimary.interpolate({ inputRange: [0, 1], outputRange: [-20, 30] }) },
+      { scale: floatPrimary.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) },
+      { rotate: floatPrimary.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '12deg'] }) },
     ],
   }
 
   const blobSecondaryStyle = {
     transform: [
-      {
-        translateX: floatSecondary.interpolate({
-          inputRange: [0, 1],
-          outputRange: [40, -50],
-        }),
-      },
-      {
-        translateY: floatSecondary.interpolate({
-          inputRange: [0, 1],
-          outputRange: [30, -25],
-        }),
-      },
-      {
-        scale: floatSecondary.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1.05, 0.88],
-        }),
-      },
+      { translateX: floatSecondary.interpolate({ inputRange: [0, 1], outputRange: [40, -50] }) },
+      { translateY: floatSecondary.interpolate({ inputRange: [0, 1], outputRange: [30, -25] }) },
+      { scale: floatSecondary.interpolate({ inputRange: [0, 1], outputRange: [1.05, 0.88] }) },
     ],
   }
 
   const shimmerStyle = {
-    opacity: shimmer.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.12, 0.32],
-    }),
+    opacity: shimmer.interpolate({ inputRange: [0, 1], outputRange: [0.12, 0.32] }),
     transform: [
-      {
-        translateY: shimmer.interpolate({
-          inputRange: [0, 1],
-          outputRange: [-120, 20],
-        }),
-      },
+      { translateY: shimmer.interpolate({ inputRange: [0, 1], outputRange: [-120, 20] }) },
     ],
   }
 
@@ -187,13 +265,13 @@ function HorizonGlow({ mode }) {
       Animated.sequence([
         Animated.timing(pulse, {
           toValue: 1,
-          duration: 7000,
+          duration: TIMING.HORIZON_PULSE,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(pulse, {
           toValue: 0,
-          duration: 7000,
+          duration: TIMING.HORIZON_PULSE,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
@@ -205,15 +283,9 @@ function HorizonGlow({ mode }) {
     return () => loop.stop()
   }, [pulse])
 
-  const opacity = pulse.interpolate({
-    inputRange: [0, 1],
-    outputRange: mode === 'night' ? [0.28, 0.46] : [0.38, 0.68],
-  })
-
-  const colors =
-    mode === 'night'
-      ? ['rgba(6,11,30,0)', 'rgba(26,48,92,0.42)', 'rgba(102,142,210,0.26)']
-      : ['rgba(255,255,255,0)', 'rgba(255,220,168,0.55)', 'rgba(255,182,98,0.32)']
+  const opacityRange = mode === 'night' ? [0.28, 0.46] : [0.38, 0.68]
+  const opacity = pulse.interpolate({ inputRange: [0, 1], outputRange: opacityRange })
+  const colors = mode === 'night' ? GRADIENTS.HORIZON_NIGHT : GRADIENTS.HORIZON_DAY
 
   return (
     <AnimatedLinearGradient
@@ -353,7 +425,7 @@ function SunLayer({ withClouds = false }) {
     const rotationLoop = Animated.loop(
       Animated.timing(rotation, {
         toValue: 1,
-        duration: 18000,
+        duration: TIMING.SUN_ROTATION,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
@@ -364,13 +436,13 @@ function SunLayer({ withClouds = false }) {
       Animated.sequence([
         Animated.timing(pulse, {
           toValue: 1,
-          duration: 4200,
+          duration: TIMING.SUN_PULSE,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(pulse, {
           toValue: 0,
-          duration: 4200,
+          duration: TIMING.SUN_PULSE,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
@@ -387,28 +459,22 @@ function SunLayer({ withClouds = false }) {
     }
   }, [pulse, rotation])
 
-  const rotateDeg = rotation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  })
-
-  const pulseScale = pulse.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.94, 1.06],
-  })
-
-  const rays = useMemo(() => Array.from({ length: 12 }).map((_, index) => index * 30), [])
+  const rotateDeg = rotation.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] })
+  const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1.06] })
+  const rays = useMemo(() => Array.from({ length: COUNTS.SUN_RAYS }).map((_, i) => i * 30), [])
 
   return (
     <View pointerEvents="none" style={styles.sunWrapper}>
       <Animated.View style={[styles.sunGlow, { transform: [{ scale: pulseScale }] }]} />
       <Animated.View style={[styles.sunCore, { transform: [{ scale: pulseScale }] }]} />
       <Animated.View style={[styles.sunRays, { transform: [{ rotate: rotateDeg }] }]}>
-        {rays.map(angle => (
-          <View key={`sun-ray-${angle}`} style={[styles.sunRay, { transform: [{ rotate: `${angle}deg` }] }]} />
+        {rays.map((angle) => (
+          <View
+            key={\`sun-ray-\${angle}\`}
+            style={[styles.sunRay, { transform: [{ rotate: \`\${angle}deg\` }] }]}
+          />
         ))}
       </Animated.View>
-
       {withClouds && <SunCloudShadows />}
     </View>
   )
@@ -422,13 +488,13 @@ function SunCloudShadows() {
       Animated.sequence([
         Animated.timing(drift, {
           toValue: 1,
-          duration: 9000,
+          duration: TIMING.SUN_CLOUD_DRIFT,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(drift, {
           toValue: 0,
-          duration: 9000,
+          duration: TIMING.SUN_CLOUD_DRIFT,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
@@ -440,10 +506,7 @@ function SunCloudShadows() {
     return () => loop.stop()
   }, [drift])
 
-  const translateX = drift.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-8, 12],
-  })
+  const translateX = drift.interpolate({ inputRange: [0, 1], outputRange: [-8, 12] })
 
   return (
     <Animated.View style={[styles.sunCloudGroup, { transform: [{ translateX }] }]}>
@@ -464,13 +527,13 @@ function MoonLayer({ withGlow = true }) {
       Animated.sequence([
         Animated.timing(bob, {
           toValue: 1,
-          duration: 5200,
+          duration: TIMING.MOON_BOB,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(bob, {
           toValue: 0,
-          duration: 5200,
+          duration: TIMING.MOON_BOB,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
@@ -482,13 +545,13 @@ function MoonLayer({ withGlow = true }) {
       Animated.sequence([
         Animated.timing(glowPulse, {
           toValue: 1,
-          duration: 6800,
+          duration: TIMING.MOON_GLOW,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(glowPulse, {
           toValue: 0,
-          duration: 6800,
+          duration: TIMING.MOON_GLOW,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
@@ -505,15 +568,8 @@ function MoonLayer({ withGlow = true }) {
     }
   }, [bob, glowPulse])
 
-  const translateY = bob.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 8],
-  })
-
-  const glowScale = glowPulse.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.9, 1.06],
-  })
+  const translateY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, 8] })
+  const glowScale = glowPulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.06] })
 
   return (
     <Animated.View style={[styles.moonWrapper, { transform: [{ translateY }] }]}>
@@ -533,11 +589,11 @@ function StarLayer({ density = 24 }) {
     () =>
       Array.from({ length: density }).map(() => ({
         progress: new Animated.Value(Math.random()),
-        duration: 3600 + Math.random() * 3200,
+        duration: TIMING.STAR_TWINKLE_BASE + Math.random() * TIMING.STAR_TWINKLE_VARIANCE,
         delay: Math.random() * 1600,
         left: Math.random() * WINDOW_WIDTH,
         top: Math.random() * WINDOW_HEIGHT * 0.55,
-        size: 1.2 + Math.random() * 1.8,
+        size: SIZES.STAR_MIN + Math.random() * (SIZES.STAR_MAX - SIZES.STAR_MIN),
       })),
     [density]
   )
@@ -584,7 +640,7 @@ function StarLayer({ density = 24 }) {
 
         return (
           <Animated.View
-            key={`star-${index}`}
+            key={\`star-\${index}\`}
             style={[
               styles.star,
               {
@@ -601,30 +657,6 @@ function StarLayer({ density = 24 }) {
       })}
     </View>
   )
-}
-
-const WIND_STRENGTH_PRIORITY = {
-  light: 1,
-  medium: 2,
-  heavy: 3,
-}
-
-function getWindStrength(speed) {
-  if (!Number.isFinite(speed)) {
-    return null
-  }
-
-  const magnitude = Math.abs(speed)
-  if (magnitude >= 14) return 'heavy'
-  if (magnitude >= 8) return 'medium'
-  if (magnitude >= 4) return 'light'
-  return null
-}
-
-function mergeWindStrength(base, overlay) {
-  if (!base) return overlay ?? null
-  if (!overlay) return base
-  return WIND_STRENGTH_PRIORITY[overlay] > WIND_STRENGTH_PRIORITY[base] ? overlay : base
 }
 
 function WindLayer({ mode = 'day', strength = 'medium' }) {
@@ -684,7 +716,7 @@ function WindLayer({ mode = 'day', strength = 'medium' }) {
 
         return (
           <AnimatedLinearGradient
-            key={`wind-${index}`}
+            key={\`wind-\${index}\`}
             colors={[trailColor, baseColor, fadeColor]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
@@ -713,13 +745,13 @@ function MistLayer({ mode, density = 'light' }) {
       Animated.sequence([
         Animated.timing(veil, {
           toValue: 1,
-          duration: 5400,
+          duration: TIMING.MIST_PULSE,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(veil, {
           toValue: 0,
-          duration: 5400,
+          duration: TIMING.MIST_PULSE,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
@@ -739,18 +771,14 @@ function MistLayer({ mode, density = 'light' }) {
   }
 
   const [minOpacity, maxOpacity] = opacityMap[density] ?? [0.18, 0.3]
-
-  const opacity = veil.interpolate({
-    inputRange: [0, 1],
-    outputRange: [minOpacity, maxOpacity],
-  })
+  const opacity = veil.interpolate({ inputRange: [0, 1], outputRange: [minOpacity, maxOpacity] })
 
   const height = density === 'storm' ? 360 : density === 'rain' ? 320 : density === 'snow' ? 300 : 260
 
   const colors =
     mode === 'night'
-      ? ['rgba(8,16,36,0)', 'rgba(36,54,92,0.42)', 'rgba(102,132,181,0.38)']
-      : ['rgba(255,255,255,0)', 'rgba(214,233,255,0.4)', 'rgba(207,223,241,0.46)']
+      ? GRADIENTS.MIST_NIGHT
+      : GRADIENTS.MIST_DAY
 
   return (
     <AnimatedLinearGradient
@@ -810,7 +838,7 @@ function SparkleLayer({ density = 12, tintColor = 'rgba(255,255,255,0.9)' }) {
 
         return (
           <Animated.View
-            key={`sparkle-${index}`}
+            key={\`sparkle-\${index}\`}
             style={[
               styles.sparkle,
               {
@@ -829,31 +857,6 @@ function SparkleLayer({ density = 12, tintColor = 'rgba(255,255,255,0.9)' }) {
       })}
     </View>
   )
-}
-
-function hexToRgba(color, alpha) {
-  if (typeof color !== 'string') {
-    return `rgba(255,255,255,${alpha})`
-  }
-
-  if (color.startsWith('#')) {
-    const hex = color.replace('#', '')
-    const normalized = hex.length === 3 ? hex.split('').map(char => char + char).join('') : hex
-    if (normalized.length !== 6) {
-      return `rgba(255,255,255,${alpha})`
-    }
-    const bigint = parseInt(normalized, 16)
-    const r = (bigint >> 16) & 255
-    const g = (bigint >> 8) & 255
-    const b = bigint & 255
-    return `rgba(${r},${g},${b},${alpha})`
-  }
-
-  if (color.startsWith('rgb')) {
-    return color
-  }
-
-  return `rgba(255,255,255,${alpha})`
 }
 
 function RainLayer({ intensity = 'moderate' }) {
@@ -899,7 +902,7 @@ function RainLayer({ intensity = 'moderate' }) {
 
         return (
           <Animated.View
-            key={`rain-${index}`}
+            key={\`rain-\${index}\`}
             style={[
               styles.rainDrop,
               {
@@ -964,7 +967,7 @@ function LightningFlash() {
 }
 
 function SnowLayer() {
-  const flakeCount = 20
+  const flakeCount = COUNTS.SNOW_FLAKES
   const flakes = useMemo(
     () =>
       Array.from({ length: flakeCount }).map(() => ({
@@ -1012,7 +1015,7 @@ function SnowLayer() {
 
         return (
           <Animated.View
-            key={`snow-${index}`}
+            key={\`snow-\${index}\`}
             style={[
               styles.snowFlake,
               {
@@ -1032,145 +1035,7 @@ function SnowLayer() {
 }
 
 function CloudLayer({ variant = 'default' }) {
-  const config = useMemo(() => {
-    switch (variant) {
-      case 'soft':
-        return {
-          count: 2,
-          sizeBase: 200,
-          sizeVariance: 60,
-          topStart: 110,
-          spacing: 92,
-          spacingJitter: 18,
-          durationBase: 26000,
-          durationVariance: 7000,
-          opacityBase: 0.16,
-          opacityRange: 0.08,
-          startOffset: -160,
-          color: 'rgba(255,255,255,0.36)',
-        }
-      case 'soft-night':
-        return {
-          count: 2,
-          sizeBase: 200,
-          sizeVariance: 60,
-          topStart: 120,
-          spacing: 92,
-          spacingJitter: 18,
-          durationBase: 32000,
-          durationVariance: 8000,
-          opacityBase: 0.14,
-          opacityRange: 0.08,
-          startOffset: -170,
-          color: 'rgba(136,162,210,0.3)',
-        }
-      case 'dense-day':
-        return {
-          count: 4,
-          sizeBase: 240,
-          sizeVariance: 100,
-          topStart: 80,
-          spacing: 110,
-          spacingJitter: 42,
-          durationBase: 25000,
-          durationVariance: 6000,
-          opacityBase: 0.26,
-          opacityRange: 0.14,
-          startOffset: -210,
-          color: 'rgba(255,255,255,0.4)',
-        }
-      case 'dense-night':
-        return {
-          count: 4,
-          sizeBase: 240,
-          sizeVariance: 110,
-          topStart: 70,
-          spacing: 110,
-          spacingJitter: 38,
-          durationBase: 29000,
-          durationVariance: 7000,
-          opacityBase: 0.26,
-          opacityRange: 0.14,
-          startOffset: -210,
-          color: 'rgba(118,144,198,0.38)',
-        }
-      case 'storm-day':
-        return {
-          count: 5,
-          sizeBase: 280,
-          sizeVariance: 120,
-          topStart: 42,
-          spacing: 90,
-          spacingJitter: 32,
-          durationBase: 23000,
-          durationVariance: 5000,
-          opacityBase: 0.34,
-          opacityRange: 0.18,
-          startOffset: -240,
-          color: 'rgba(96,112,142,0.52)',
-        }
-      case 'storm-night':
-        return {
-          count: 5,
-          sizeBase: 280,
-          sizeVariance: 120,
-          topStart: 36,
-          spacing: 90,
-          spacingJitter: 30,
-          durationBase: 26000,
-          durationVariance: 6000,
-          opacityBase: 0.34,
-          opacityRange: 0.18,
-          startOffset: -240,
-          color: 'rgba(58,76,112,0.56)',
-        }
-      case 'snow-day':
-        return {
-          count: 4,
-          sizeBase: 240,
-          sizeVariance: 90,
-          topStart: 80,
-          spacing: 112,
-          spacingJitter: 40,
-          durationBase: 28000,
-          durationVariance: 7000,
-          opacityBase: 0.24,
-          opacityRange: 0.12,
-          startOffset: -210,
-          color: 'rgba(232,242,255,0.44)',
-        }
-      case 'snow-night':
-        return {
-          count: 4,
-          sizeBase: 240,
-          sizeVariance: 90,
-          topStart: 70,
-          spacing: 112,
-          spacingJitter: 36,
-          durationBase: 32000,
-          durationVariance: 7000,
-          opacityBase: 0.22,
-          opacityRange: 0.12,
-          startOffset: -210,
-          color: 'rgba(176,198,236,0.4)',
-        }
-      default:
-        return {
-          count: 3,
-          sizeBase: 220,
-          sizeVariance: 140,
-          topStart: 60,
-          spacing: 120,
-          spacingJitter: 40,
-          durationBase: 28000,
-          durationVariance: 9000,
-          opacityBase: 0.18,
-          opacityRange: 0.12,
-          startOffset: -200,
-          color: 'rgba(255,255,255,0.32)',
-        }
-    }
-  }, [variant])
+  const config = useMemo(() => CLOUD_CONFIGS[variant] ?? CLOUD_CONFIGS.default, [variant])
 
   const cloudCount = config.count
   const clouds = useMemo(
@@ -1214,7 +1079,7 @@ function CloudLayer({ variant = 'default' }) {
 
         return (
           <Animated.View
-            key={`cloud-${index}`}
+            key={\`cloud-\${index}\`}
             style={[
               styles.cloud,
               {
