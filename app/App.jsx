@@ -1,12 +1,18 @@
 import React from 'react'
-import { View, StatusBar } from 'react-native'
-import { WeatherScreen } from './screens/WeatherScreen'
+import { StatusBar, StyleSheet, View } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { WeatherScreen } from './screens/WeatherScreen'
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <View style={{ flex: 1 }}>
+      <View style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="black" />
         <WeatherScreen />
       </View>
