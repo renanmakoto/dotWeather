@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   View,
   StyleSheet,
@@ -19,13 +19,79 @@ import {
 } from '../../lib/weatherPresentation'
 import AnimatedBackground from '../components/AnimatedBackground'
 
+const LAYOUT = {
+  SCROLL_PADDING_TOP: 16,
+  SCROLL_PADDING_BOTTOM: 32,
+  FOOTER_PADDING_BOTTOM: 6,
+}
+
+const COPY = {
+  LOADING: 'Fetching latest weather',
+  EMPTY_HEADLINE: 'Track any city in seconds.',
+  EMPTY_BODY: 'Search above to reveal temperature trends and insights tailored to your next destination.',
+  FOOTER: '2025 · dotExtension',
+  AD_LABEL: 'Ad space available',
+  AD_COPY: 'Reserve this spot for promotions, partners, or local travel tips.',
+}
+
+const SHOW_AD_SLOT = false
+
+function LoadingIndicator() {
+  return (
+    <View style={styles.loadingContainer}>
+      <View style={styles.loadingDot} />
+      <Text style={styles.loadingText}>{COPY.LOADING}</Text>
+    </View>
+  )
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <View style={styles.errorPill}>
+      <Text style={styles.errorText}>{message}</Text>
+    </View>
+  )
+}
+
+function EmptyState() {
+  return (
+    <View style={styles.emptyState}>
+      <Text style={styles.emptyHeadline}>{COPY.EMPTY_HEADLINE}</Text>
+      <Text style={styles.emptyCopy}>{COPY.EMPTY_BODY}</Text>
+    </View>
+  )
+}
+
+function Footer({ bottomInset }) {
+  return (
+    <View style={[styles.footer, { paddingBottom: bottomInset + LAYOUT.FOOTER_PADDING_BOTTOM }]}>
+      <View style={styles.footerBadge}>
+        <Text style={styles.footerText}>{COPY.FOOTER}</Text>
+      </View>
+    </View>
+  )
+}
+
+function AdSlot() {
+  if (!SHOW_AD_SLOT) return null
+
+  return (
+    <View style={styles.adContainer}>
+      <Text style={styles.adLabel}>{COPY.AD_LABEL}</Text>
+      <Text style={styles.adCopy}>{COPY.AD_COPY}</Text>
+    </View>
+  )
+}
+
 export default function WeatherScreen() {
   const { weatherData, fetchWeather, loading, error } = useWeather()
   const [presentation, setPresentation] = useState(getDefaultPresentation())
   const insets = useSafeAreaInsets()
-  const showAdSlot = false
 
-  const handleSearch = city => fetchWeather(city)
+  const handleSearch = useCallback(
+    (city) => fetchWeather(city),
+    [fetchWeather]
+  )
 
   useEffect(() => {
     if (weatherData?.current) {
@@ -35,6 +101,17 @@ export default function WeatherScreen() {
       setPresentation(getDefaultPresentation())
     }
   }, [weatherData])
+
+  const scrollContentStyle = [
+    styles.scrollContent,
+    {
+      paddingTop: insets.top + LAYOUT.SCROLL_PADDING_TOP,
+      paddingBottom: insets.bottom + LAYOUT.SCROLL_PADDING_BOTTOM,
+    },
+  ]
+
+  const showEmptyState = !loading && !error && !weatherData
+  const showWeatherCard = weatherData && !loading && !error
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -52,10 +129,8 @@ export default function WeatherScreen() {
           >
             <ScrollView
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={[
-                styles.scrollContent,
-                { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 32 },
-              ]}
+              contentContainerStyle={scrollContentStyle}
+              keyboardShouldPersistTaps="handled"
             >
               <SearchBar
                 onSearch={handleSearch}
@@ -63,49 +138,18 @@ export default function WeatherScreen() {
                 loading={loading}
               />
 
-              {error && (
-                <View style={styles.errorPill}>
-                  <Text style={styles.errorText}>{error}</Text>
-                </View>
-              )}
-
-              {loading && (
-                <View style={styles.loadingContainer}>
-                  <View style={styles.loadingDot} />
-                  <Text style={styles.loadingText}>Fetching latest weather</Text>
-                </View>
-              )}
-
-              {!loading && !error && !weatherData && (
-                <View style={styles.emptyState}>
-                  <Text style={styles.emptyHeadline}>Track any city in seconds.</Text>
-                  <Text style={styles.emptyCopy}>
-                    Search above to reveal temperature trends and insights tailored to your next
-                    destination.
-                  </Text>
-                </View>
-              )}
-
-              {weatherData && !loading && !error && (
+              {error && <ErrorMessage message={error} />}
+              {loading && <LoadingIndicator />}
+              {showEmptyState && <EmptyState />}
+              {showWeatherCard && (
                 <WeatherCard weatherData={weatherData} presentation={presentation} />
               )}
 
-              {showAdSlot && (
-                <View style={styles.adContainer}>
-                  <Text style={styles.adLabel}>Ad space available</Text>
-                  <Text style={styles.adCopy}>
-                    Reserve this spot for promotions, partners, or local travel tips.
-                  </Text>
-                </View>
-              )}
+              <AdSlot />
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <View style={[styles.footer, { paddingBottom: insets.bottom + 6 }]}>
-            <View style={styles.footerBadge}>
-              <Text style={styles.footerText}>2025 · dotExtension</Text>
-            </View>
-          </View>
+          <Footer bottomInset={insets.bottom} />
         </SafeAreaView>
       </AnimatedBackground>
     </TouchableWithoutFeedback>
