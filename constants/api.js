@@ -1,19 +1,26 @@
-// export async function fetchWeather(lat, lon) {
-  
-//   const url = `https://api.open-meteo.com/v1/forecast` +
-//     `?latitude=${lat}&longitude=${lon}` +
-//     `&current_weather=true` +
-//     `&timezone=auto`;
+export const GEO_API_BASE = 'https://geocoding-api.open-meteo.com/v1'
+export const WEATHER_API_BASE = 'https://api.open-meteo.com/v1'
 
-//   try {
-//     const response = await fetch(url);
-//     if (!response.ok) {
-//       throw new Error('Weather fetch failed');
-//     }
-//     const data = await response.json();
-//     return data.current_weather;
-//   } catch (error) {
-//     console.error('Weather API error:', error);
-//     throw error;
-//   }
-// }
+export const WEATHER_PARAMS = [
+  'temperature_2m',
+  'relative_humidity_2m',
+  'apparent_temperature',
+  'is_day',
+  'precipitation',
+  'rain',
+  'showers',
+  'snowfall',
+  'weather_code',
+  'cloud_cover',
+  'pressure_msl',
+  'surface_pressure',
+  'wind_speed_10m',
+  'wind_direction_10m',
+  'wind_gusts_10m'
+]
+
+export const HOURLY_PARAMS = [
+  'temperature_2m',
+  'weather_code',
+  'is_day'
+]
