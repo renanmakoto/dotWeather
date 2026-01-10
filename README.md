@@ -9,7 +9,7 @@
 TECHNOLOGIES USED:
 
 <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/JavaScript-logo.png/64px-JavaScript-logo.png" /></a>
-<a href="https://reactjs.org/" target="_blank"><img src="https://en.wikipedia.org/wiki/React_(software)#/media/File:React_Logo_SVG.svg" /></a>
+<a href="https://reactjs.org/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/960px-React_Logo_SVG.svg.png" /></a>
 <a href="https://nodejs.org/"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" style="width: 64px; height: 64px;" /></a>
 <a href="https://developer.android.com/studio"><img src="https://1.bp.blogspot.com/-LgTa-xDiknI/X4EflN56boI/AAAAAAAAPuk/24YyKnqiGkwRS9-_9suPKkfsAwO4wHYEgCLcBGAsYHQ/s0/image9.png" style="width: 64px; height: 64px" /></a>
 <a href="https://expo.dev/"><img src="https://bitrise-steplib-collection.s3.amazonaws.com/steps/expo-detach/assets/icon.svg" style="width: 64px; height: 64px" /></a>
