@@ -470,8 +470,8 @@ function SunLayer({ withClouds = false }) {
       <Animated.View style={[styles.sunRays, { transform: [{ rotate: rotateDeg }] }]}>
         {rays.map((angle) => (
           <View
-            key={\`sun-ray-\${angle}\`}
-            style={[styles.sunRay, { transform: [{ rotate: \`\${angle}deg\` }] }]}
+            key={`sun-ray-${angle}`}
+            style={[styles.sunRay, { transform: [{ rotate: `${angle}deg` }] }]}
           />
         ))}
       </Animated.View>
@@ -640,7 +640,7 @@ function StarLayer({ density = 24 }) {
 
         return (
           <Animated.View
-            key={\`star-\${index}\`}
+            key={`star-${index}`}
             style={[
               styles.star,
               {
@@ -716,7 +716,7 @@ function WindLayer({ mode = 'day', strength = 'medium' }) {
 
         return (
           <AnimatedLinearGradient
-            key={\`wind-\${index}\`}
+            key={`wind-${index}`}
             colors={[trailColor, baseColor, fadeColor]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
@@ -838,7 +838,7 @@ function SparkleLayer({ density = 12, tintColor = 'rgba(255,255,255,0.9)' }) {
 
         return (
           <Animated.View
-            key={\`sparkle-\${index}\`}
+            key={`sparkle-${index}`}
             style={[
               styles.sparkle,
               {
@@ -902,7 +902,7 @@ function RainLayer({ intensity = 'moderate' }) {
 
         return (
           <Animated.View
-            key={\`rain-\${index}\`}
+            key={`rain-${index}`}
             style={[
               styles.rainDrop,
               {
@@ -1015,7 +1015,7 @@ function SnowLayer() {
 
         return (
           <Animated.View
-            key={\`snow-\${index}\`}
+            key={`snow-${index}`}
             style={[
               styles.snowFlake,
               {
@@ -1079,7 +1079,7 @@ function CloudLayer({ variant = 'default' }) {
 
         return (
           <Animated.View
-            key={\`cloud-\${index}\`}
+            key={`cloud-${index}`}
             style={[
               styles.cloud,
               {
