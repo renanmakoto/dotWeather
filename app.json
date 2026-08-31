@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "com.dotextension.dotweather",
-      "versionCode": 23,
+      "versionCode": 24,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon_2.png",
         "backgroundColor": "#ffffff"
